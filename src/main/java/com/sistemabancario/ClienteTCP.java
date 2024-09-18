@@ -55,8 +55,7 @@ public class ClienteTCP {
 		} catch (InterruptedException ex) {
             Logger.getLogger(ClienteTCP.class.getName()).log(Level.SEVERE, null, ex);
         }
-		System.out.println("press any key to close");
-                System.out.println("prueba");
+		System.out.println("press any key to close"); 
 		//Scanner scan = new Scanner(System.in);
 		//String message = scan.next().toLowerCase();
 		//while (! message.equals("no")) {
