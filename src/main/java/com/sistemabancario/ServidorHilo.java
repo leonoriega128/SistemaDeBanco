@@ -1,7 +1,9 @@
 package com.sistemabancario;
 
 import Controlador.Conexion;
+import Modelo.Cliente;
 import Modelo.Cuenta;
+import MySQL.MySQLCliente;
 import MySQL.MySQLCuenta;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -25,16 +27,16 @@ public class ServidorHilo extends Thread {
     @Override
     public void run() {
         try {
-            out.writeUTF("Indica tu nombre:");
+            out.writeUTF("Ingrese numero de cuenta:");
             nombreCliente = in.readUTF();
-
+            Cliente cliente = traerCuenta(Integer.parseInt(nombreCliente));
             // Obtener el saldo inicial de la cuenta
-            float fondosCuenta = consultarCuenta();
+            float fondosCuenta = consultarCuenta(cliente.getId_Cliente());
 
             int opcion = 0;
             do {
                 // Enviar opciones al cliente
-                out.writeUTF("\nHola " + nombreCliente + ", su saldo actual es de: " + fondosCuenta + ", elige una opción:\n"
+                out.writeUTF("\nHola " + cliente.getNombre_Cliente() + ", su saldo actual es de: " + fondosCuenta + ", elige una opción:\n"
                         + "1. Retiro\n"
                         + "2. Depósito\n"
                         + "3. Transferencia\n"
@@ -58,8 +60,8 @@ public class ServidorHilo extends Thread {
                         if (fondosCuenta >= montoRetiro) {
                             fondosCuenta -= montoRetiro; // Actualiza el saldo
                             out.writeUTF("Has retirado: " + montoRetiro + ". Saldo actual: " + fondosCuenta);
-                             
-                            actualizarSaldo(fondosCuenta);
+
+                            actualizarSaldo(cliente, fondosCuenta);
                         } else {
                             out.writeUTF("Saldo insuficiente. Saldo actual: " + fondosCuenta);
                         }
@@ -70,8 +72,8 @@ public class ServidorHilo extends Thread {
                         float montoDeposito = Float.parseFloat(in.readUTF());
                         fondosCuenta += montoDeposito; // Actualiza el saldo
                         out.writeUTF("Has depositado: " + montoDeposito + ". Saldo actual: " + fondosCuenta);
-                         
-                        actualizarSaldo(fondosCuenta);
+
+                        actualizarSaldo(cliente, fondosCuenta);
                         break;
 
                     case 3:
@@ -82,8 +84,8 @@ public class ServidorHilo extends Thread {
                         if (fondosCuenta >= montoTransferencia) {
                             fondosCuenta -= montoTransferencia; // Actualiza saldo
                             out.writeUTF("Has transferido " + montoTransferencia + " a " + destinatario + ". Saldo actual: " + fondosCuenta);
-                             
-                            actualizarSaldo(fondosCuenta);
+
+                            actualizarSaldo(cliente, fondosCuenta);
                         } else {
                             out.writeUTF("Saldo insuficiente para la transferencia. Saldo actual: " + fondosCuenta);
                         }
@@ -98,7 +100,7 @@ public class ServidorHilo extends Thread {
                         break;
                 }
 
-            } while (opcion != 4);  
+            } while (opcion != 4);
 
         } catch (IOException | NumberFormatException e) {
             System.out.println("Error en el hilo: " + e.getMessage());
@@ -111,18 +113,35 @@ public class ServidorHilo extends Thread {
         }
     }
 
-    public float consultarCuenta() {
+    public float consultarCuenta(int id) {
         Conexion c = new Conexion();
         MySQLCuenta msq = new MySQLCuenta(c.conectar());
-        Cuenta cuenta = msq.obtener(6);
+        Cuenta cuenta = msq.obtener(id);
         System.out.println("Saldo actual de la cuenta: " + cuenta.getSaldo());
         return cuenta.getSaldo();
     }
 
-    public void actualizarSaldo(float saldo) { 
+    public void actualizarSaldo(Cliente cliente, float retiro) {
         Conexion c = new Conexion();
         MySQLCuenta msq = new MySQLCuenta(c.conectar());
-        Cuenta cuenta = msq.obtener(6);         
+        Cuenta cuenta = msq.obtener(cliente.getId_Cliente());
+        cuenta.setId_Cuenta(cuenta.getId_Cuenta());
+        cuenta.setId_Cliente(cuenta.getId_Cliente());
+        cuenta.setTipo(cuenta.getTipo()); 
+        cuenta.setFecha_Creacion("123");
+        cuenta.setSaldo(retiro);
+        System.out.println(retiro);
+        System.out.println(cuenta.getId_Cliente() + cuenta.getSaldo() + cuenta.getId_Cliente());
         msq.modificar(cuenta);
+    }
+
+    public Cliente traerCuenta(int id) {
+        Conexion c = new Conexion();
+        MySQLCliente msq = new MySQLCliente(c.conectar());
+        Cliente cliente = msq.obtener(id);
+        if (cliente == null) {
+            return null;
+        }
+        return cliente;
     }
 }

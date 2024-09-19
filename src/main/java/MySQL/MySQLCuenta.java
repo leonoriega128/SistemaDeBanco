@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 public class MySQLCuenta implements cuentaDAO{
     final String INSERT = "INSERT INTO cuentas(id_cuenta,id_cliente,tipo, slado,fecha_creacion) VALUES(?,?,?,?,?)";
-    final String UPDATE = "UPDATE cuentas SET id_cuenta=?,id_cliente=?, tipo=?, saldo=?, fecha_crecaion=? WHERE id_cuenta=?" ;
+    final String UPDATE = "UPDATE cuentas SET id_cuenta=?,id_cliente=?, tipo=?, saldo=?, fecha_creacion=? WHERE id_cuenta=?" ;
     final String DELETE = "DELETE FROM cuentas WHERE id_cuenta=?";
     final String GETALL = "SELECT id_cuenta, id_cliente, tipo, saldo, fecha_creacion FROM cuentas";
     final String GETONE = "SELECT id_cuenta, id_cliente, tipo, saldo, fecha_creacion FROM cuentas WHERE id_cuenta=?";
@@ -74,6 +74,8 @@ public class MySQLCuenta implements cuentaDAO{
             stat.setString(3, a.getTipo());
             stat.setFloat(4, a.getSaldo());
             stat.setString(5,a.getFecha_Creacion());
+            
+            stat.setInt(6, a.getId_Cuenta());
             stat.execute();
             
             if(stat.executeUpdate() ==0){
