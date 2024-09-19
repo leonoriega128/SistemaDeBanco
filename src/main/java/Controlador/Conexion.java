@@ -3,12 +3,12 @@ package Controlador;
 import java.sql.*;
 public class Conexion {
     private Connection conn=null;
-    private final String driver="com.mysql.jdbc.Driver";
+    private final String driver="com.mysql.cj.jdbc.Driver";
     private final String database="banco";
     private final String hostname="localhost";
     private final String port="3306";
     private final String username="root";
-    private final String password="";
+    private final String password="root";
     private final String url="jdbc:mysql://"+hostname+":"+port+"/"+database+"?useSSL=false";
     
     public Connection conectar()

@@ -40,7 +40,20 @@ public class ClienteTCP {
                         // Escribe el nombre y se lo manda al servidor
                         String nombre = sn.next();
                         out.writeUTF(nombre);
-            
+                        // opcion Menu
+                         String Menu = in.readUTF();
+                         System.out.println(Menu);
+                         Menu = sn.next();
+                         //
+                         out.writeUTF(Menu);
+                         Menu = in.readUTF();
+                         System.out.println(Menu);
+                         // 
+                         Menu = sn.next();
+                         out.writeUTF(Menu);
+                         //
+                         Menu = in.readUTF();
+                         System.out.println(Menu);
                         // ejecutamos el hilo
                         ClienteHilo hilo = new ClienteHilo(in, out);
                         hilo.start();
@@ -54,8 +67,7 @@ public class ClienteTCP {
 			System.exit(1);
 		} catch (InterruptedException ex) {
             Logger.getLogger(ClienteTCP.class.getName()).log(Level.SEVERE, null, ex);
-        }
-		System.out.println("press any key to close"); 
+        } 
 		//Scanner scan = new Scanner(System.in);
 		//String message = scan.next().toLowerCase();
 		//while (! message.equals("no")) {
@@ -65,8 +77,7 @@ public class ClienteTCP {
 			//message = scan.next().toLowerCase();
 		//}
 		//sockOut.close();
-		//sockIn.close();
-		sock.close();
+		//sockIn.close(); 
     }
     
 }
