@@ -83,15 +83,18 @@ public class ServidorHilo extends Thread {
                         // Enviar mensaje solicitando destinatario
                         out.writeUTF("Ingrese el destinatario:");
                         String destinatario = in.readUTF(); // Recibir el destinatario
-                        System.out.println(destinatario);
+                        String numeroDestinatario = in.readUTF(); 
                         if (fondosCuenta >= montoTransferencia) {
                             // Procesar la transferencia
-                            fondosCuenta -= montoTransferencia; // Actualizar saldo
-                            out.writeUTF("Has transferido " + montoTransferencia + " a " + destinatario + ". Saldo actual: " + fondosCuenta);
-
+        
                             // Actualizar saldo del destinatario
-                            Cliente transfiereA = traerCuenta(Integer.parseInt(destinatario));
-                            enviarTransferencia(transfiereA, montoTransferencia);
+                            Cliente transfiereA = traerCuenta(Integer.parseInt(numeroDestinatario));
+                            
+                            enviarTransferencia(transfiereA, montoTransferencia);                                                        
+                            fondosCuenta -= montoTransferencia; // Actualizar saldo
+                            actualizarSaldo(cliente, fondosCuenta);
+                            out.writeUTF("Has transferido " + montoTransferencia + " a " + transfiereA.getNombre_Cliente() + ". Saldo actual: " + fondosCuenta);
+                            
 
                             // Confirmar transferencia
                             out.writeUTF("Transferencia realizada con éxito.");
