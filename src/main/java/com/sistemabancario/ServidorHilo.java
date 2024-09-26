@@ -78,14 +78,23 @@ public class ServidorHilo extends Thread {
 
                     case 3:
                         out.writeUTF("Has seleccionado: Transferencia\nIngrese el monto a transferir:");
-                        float montoTransferencia = Float.parseFloat(in.readUTF());
+                        float montoTransferencia = Float.parseFloat(in.readUTF()); // Recibir el monto
+
+                        // Enviar mensaje solicitando destinatario
                         out.writeUTF("Ingrese el destinatario:");
-                        String destinatario = in.readUTF();
+                        String destinatario = in.readUTF(); // Recibir el destinatario
+                        System.out.println(destinatario);
                         if (fondosCuenta >= montoTransferencia) {
-                            fondosCuenta -= montoTransferencia; // Actualiza saldo
+                            // Procesar la transferencia
+                            fondosCuenta -= montoTransferencia; // Actualizar saldo
                             out.writeUTF("Has transferido " + montoTransferencia + " a " + destinatario + ". Saldo actual: " + fondosCuenta);
 
-                            actualizarSaldo(cliente, fondosCuenta);
+                            // Actualizar saldo del destinatario
+                            Cliente transfiereA = traerCuenta(Integer.parseInt(destinatario));
+                            enviarTransferencia(transfiereA, montoTransferencia);
+
+                            // Confirmar transferencia
+                            out.writeUTF("Transferencia realizada con éxito.");
                         } else {
                             out.writeUTF("Saldo insuficiente para la transferencia. Saldo actual: " + fondosCuenta);
                         }
@@ -93,6 +102,7 @@ public class ServidorHilo extends Thread {
 
                     case 4:
                         out.writeUTF("Gracias por usar el servicio, hasta luego.");
+                        socket.close();
                         break;
 
                     default:
@@ -101,15 +111,8 @@ public class ServidorHilo extends Thread {
                 }
 
             } while (opcion != 4);
-
         } catch (IOException | NumberFormatException e) {
             System.out.println("Error en el hilo: " + e.getMessage());
-        } finally {
-            try {
-                socket.close(); // Aseguramos el cierre del socket
-            } catch (IOException e) {
-                System.out.println("Error cerrando el socket: " + e.getMessage());
-            }
         }
     }
 
@@ -127,10 +130,24 @@ public class ServidorHilo extends Thread {
         Cuenta cuenta = msq.obtener(cliente.getId_Cliente());
         cuenta.setId_Cuenta(cuenta.getId_Cuenta());
         cuenta.setId_Cliente(cuenta.getId_Cliente());
-        cuenta.setTipo(cuenta.getTipo()); 
+        cuenta.setTipo(cuenta.getTipo());
         cuenta.setFecha_Creacion("123");
         cuenta.setSaldo(retiro);
         System.out.println(retiro);
+        System.out.println(cuenta.getId_Cliente() + cuenta.getSaldo() + cuenta.getId_Cliente());
+        msq.modificar(cuenta);
+    }
+
+    public void enviarTransferencia(Cliente cliente, float ingreso) {
+        Conexion c = new Conexion();
+        MySQLCuenta msq = new MySQLCuenta(c.conectar());
+        Cuenta cuenta = msq.obtener(cliente.getId_Cliente());
+        cuenta.setId_Cuenta(cuenta.getId_Cuenta());
+        cuenta.setId_Cliente(cuenta.getId_Cliente());
+        cuenta.setTipo(cuenta.getTipo());
+        cuenta.setFecha_Creacion("123");
+        cuenta.setSaldo(ingreso + cuenta.getSaldo());
+        System.out.println(ingreso);
         System.out.println(cuenta.getId_Cliente() + cuenta.getSaldo() + cuenta.getId_Cliente());
         msq.modificar(cuenta);
     }

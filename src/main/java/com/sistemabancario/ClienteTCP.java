@@ -53,7 +53,16 @@ public class ClienteTCP {
                          out.writeUTF(Menu);
                          //
                          Menu = in.readUTF();
-                         System.out.println(Menu);
+                         out.writeUTF(Menu);
+                         System.out.println(Menu); 
+                         String mensajeMonto = sn.next();
+                        out.writeUTF(mensajeMonto);
+                         
+                        String mensajeMonto2 = in.readUTF();  // Espera el mensaje del servidor
+                        out.writeUTF(mensajeMonto2);    // Imprime "Has seleccionado: Transferencia\nIngrese el monto a transferir:"
+                        System.out.println(mensajeMonto2); 
+                 
+
                         // ejecutamos el hilo
                         ClienteHilo hilo = new ClienteHilo(in, out);
                         hilo.start();
