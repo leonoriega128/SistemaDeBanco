@@ -9,6 +9,9 @@ import java.net.Socket;
 public class ServidorTCP {
 
     public static void main(String[] args) {
+        //agregar hilo para detector de fallas, sería una clase nueva por agregar,
+        // la clase debería ser un thread, debe tener una variable que indique cual 
+        // es el servidor que esta funcionando
         try (ServerSocket server = new ServerSocket(7777)) {
             while (true) {
                 Socket sock = server.accept();
